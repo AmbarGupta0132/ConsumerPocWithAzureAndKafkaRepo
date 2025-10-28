@@ -19,7 +19,7 @@ spring:
         processor:
           checkpoint-store:
             account-name: eventhubpocplcg
-            account-key: tPxNu+ZUwmR4o0ITnxXE6POtFTeCiV7boF45k6WhlFk7qIcjx5NYO/8dC8VRL0OxQ7jSrDsHhCdq+AStz4JKEQ==
+            #account-key: tPxNu+ZUwmR4o0ITnxXE6POtFTeCiV7boF45k6WhlFk7qIcjx5NYO/8dC8VRL0OxQ7jSrDsHhCdq+AStz4JKEQ==
             container-name: eventhub-checkpoints
     stream:
       bindings:
