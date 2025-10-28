@@ -6,33 +6,32 @@ management:
       exposure:
         include: "*"
 
-#spring:
-#  application:
-#    name: policy-client-consumer-app
-#  cloud:
-#    function:
-#      definition: getPolicy;getClient
-#    azure:
-#      eventhubs:
-#        namespace: eventhubnamespacepoc2
-#        connection-string: Endpoint=sb://eventhubnamespacepoc2.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=PiO714FJpeuhLITK/xRZkaBScRLSTv4k1+AEhBgq4eY=
-#        processor:
-#          checkpoint-store:
-#            account-name: eventhubpocplcg
-#            account-key: tPxNu+ZUwmR4o0ITnxXE6POtFTeCiV7boF45k6WhlFk7qIcjx5NYO/8dC8VRL0OxQ7jSrDsHhCdq+AStz4JKEQ==
-#            container-name: eventhub-checkpoints
-#    stream:
-#      bindings:
-#        getPolicy-in-0:
-#          destination: poc2eventhub-policy
-#          group: $Default
-#          consumer:
-#            startOffset: earliest
-#        getClient-in-0:
-#          destination: poc2eventhub-client
-#          group: $Default
-#          consumer:
-#            startOffset: earliest
+spring:
+  application:
+    name: policy-client-consumer-app
+  cloud:
+    function:
+      definition: getPolicy;getClient
+    azure:
+      eventhubs:
+        namespace: eventhubnamespacepoc2
+        processor:
+          checkpoint-store:
+            account-name: eventhubpocplcg
+            account-key: tPxNu+ZUwmR4o0ITnxXE6POtFTeCiV7boF45k6WhlFk7qIcjx5NYO/8dC8VRL0OxQ7jSrDsHhCdq+AStz4JKEQ==
+            container-name: eventhub-checkpoints
+    stream:
+      bindings:
+        getPolicy-in-0:
+          destination: poc2eventhub-policy
+          group: $Default
+          consumer:
+            startOffset: earliest
+        getClient-in-0:
+          destination: poc2eventhub-client
+          group: $Default
+          consumer:
+            startOffset: earliest
 
 
   h2:
