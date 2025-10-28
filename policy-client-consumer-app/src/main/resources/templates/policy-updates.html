@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Policy Updates</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #aaa;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        caption {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+<h1>Policy Updates</h1>
+
+<div id="policyTable"></div>
+
+<div id="notifications"></div>
+<!--<input type="text" id="message" placeholder="Enter your message">
+<button onclick="sendMessage()">Send</button>-->
+
+<script>
+    let stompClient = null;
+
+    function connect() {
+        const socket = new SockJS('http://4.197.233.33:8081/ws');  // Correct the WebSocket URL
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);  // Log the successful connection
+            stompClient.subscribe('/topic/policy-updates', function (message) {
+                showNotification(message);
+                //const payload = JSON.parse(message.body);
+                //generateTable(payload);  // Handle incoming messages
+            });
+        }, function (error) {
+            console.error('WebSocket connection error: ' + error);  // Log WebSocket errors
+        });
+    }
+
+
+    function sendMessage() {
+        const message = document.getElementById('message').value;
+        if (stompClient && stompClient.connected) {
+            stompClient.send('/app/policyMessage', {}, message);
+            console.log('Message sent:', message);
+        } else {
+            console.error('WebSocket connection is not established.');
+        }
+    }
+
+    function showNotification(message) {
+        const notifications = document.getElementById('notifications');
+        const notification = document.createElement('p');
+        notification.textContent = message;
+        notifications.appendChild(notification);
+    }
+
+
+
+    function flattenObject(obj) {
+        const result = {};
+        for (const key in obj) {
+            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                for (const subKey in obj[key]) {
+                    result[`${key}.${subKey}`] = obj[key][subKey];
+                }
+            } else {
+                result[key] = obj[key];
+            }
+        }
+        return result;
+    }
+    function generateTable(data) {
+        console.log("data.currentPolicy :" + data.currentPolicy);
+        console.log("data.previousPolicy :" + data.previousPolicy);
+        const currentPolicy = data.currentPolicy ?? {};
+        const previousPolicy = data.previousPolicy ?? {};
+
+        // Flatten nested fields like id.policyNumber and id.version
+        const flatten = (obj) => {
+            const result = {};
+            for (const key in obj) {
+                if (typeof obj[key] === 'object' && obj[key] !== null) {
+                    for (const subKey in obj[key]) {
+                        result[`${key}.${subKey}`] = obj[key][subKey];
+                    }
+                } else {
+                    result[key] = obj[key];
+                }
+            }
+            return result;
+        };
+
+        const current = flatten(currentPolicy);
+        const previous = flatten(previousPolicy);
+
+        const allFields = new Set([...Object.keys(current), ...Object.keys(previous)]);
+
+        let html = `<table class="table table-hover">
+            <caption>Policy Comparison</caption>
+            <thead class="table-dark">
+                <tr>
+                    <th>FIELD</th>
+                    <th>CURRENT POLICY</th>
+                    <th>PREVIOUS POLICY</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        for (const field of allFields) {
+            let displayField = field;
+            console.log("displayField : " + displayField);
+            // Custom display names for nested fields
+            if (field.trim() === "id.version") {
+                displayField = "VERSION";
+            } else if (field.trim() === "id.policyNumber") {
+                displayField = "POLICYNUMBER";
+            } else {
+                displayField = field.toUpperCase();
+            }
+
+            html += `<tr>
+                    <td><b>${displayField}</b></td>
+                    <td>${current[field] ?? ''}</td>
+                    <td>${previous[field] ?? ''}</td>
+                </tr>`;
+        }
+
+        html += `</tbody></table>`;
+        document.getElementById('policyTable').innerHTML = html;
+    }
+
+
+    connect();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  title: Policy Claims  API
+  version: 1.0.0
+
+paths:
+  /policy/download:
+    get:
+      summary: Download all policies as an Excel file
+      operationId: downloadPoliciesExcel
+      tags:
+        - PolicyController
+      responses:
+        '200':
+          description: Excel file containing all policies
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+
+
+  /client/download:
+    get:
+      summary: Download all policies as an Excel file
+      operationId: downloadConsumerExcel
+      tags:
+        - ClientController
+      responses:
+        '200':
+          description: Excel file containing all policies
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+
+components:
+  schemas:
+    PolicyRequest:
+      type: object
+      properties:
+        policyid:
+          $ref: '#/components/schemas/PolicyId'
+        map:
+          type: object
+          additionalProperties: true
+      
+
+    Policy:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/PolicyId'
+        status:
+          type: string
+        productName:
+          type: string
+        riskCommence:
+          type: string
+          format: date
+        relationshipType:
+          type: string
+        adviserNumber:
+          type: string
+        paymentFrequency:
+          type: string
+        annualPremium:
+          type: number
+          format: double
+        instalmentPrem:
+          type: number
+          format: double
+        expenseAnnualPremium:
+          type: number
+          format: double
+        nextAnniversaryDate:
+          type: string
+          format: date-time
+        outstandingBalance:
+          type: number
+          format: double
+        nextPaymentDueDate:
+          type: string
+          format: date-time
+        comments:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+      required:
+        - id
+
+    PolicyId:
+      type: object
+      properties:
+        policyNumber:
+          type: integer
+          format: int64
+        version:
+          type: string
+      required:
+        - policyNumber	
+        - version	
+
+    ClientId:
+      type: object
+      properties:
+        clientIddd:
+          type: integer
+          format: int64
+        version:
+          type: string
+      required:
+        - clientId	
+        - version	
+    
+    ClientRequest:
+      type: object
+      properties:
+        clientId:
+          $ref: '#/components/schemas/ClientId'
+        map:
+          type: object
+          additionalProperties: true
+
+    Client:
+      type: object
+      properties:
+        id:
+            $ref: '#/components/schemas/ClientId'
+        status:
+          type: string
+        title:
+          type: string
+        forename:
+          type: string
+        surname:
+          type: string
+        gender:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        occupation:
+          type: string
+        preferredRiskCode:
+          type: string
+        addressTypeCode:
+          type: string
+        line1:
+          type: string
+        line2:
+          type: string
+        line3:
+          type: string
+        line4:
+          type: string
+        suburb:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        postCode:
+          type: string
+        primary:
+          type: boolean
+        email:
+          type: string
+          format: email
+        mobilePhone:
+          type: string
+        homePhone:
+          type: string
+        businessPhone:
+          type: string
+        comments:
+          type: string
+        createdDate:
+          type: string
+          format: date-time
+        modifiedDate:
+          type: string
+          format: date-time
+      required:
+        - id		  
